@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  # Apache + PHP Service
+  web:
+    build: .  # Build image from the local Dockerfile
+    ports:
+      - "8080:80"
+    volumes:
+      - ./html:/var/www/html
+    depends_on:
+      - db
+    environment:
+      - "DB_HOST=db"
+  
+  # MariaDB Service
+  db:
+    image: mariadb:10.5
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=mydatabase
+      - MYSQL_USER=myuser
+      - MYSQL_PASSWORD=mypassword
+
+  # phpMyAdmin Service
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - PMA_USER=root
+      - PMA_PASSWORD=rootpassword
+
+volumes:
+  mariadb-data:
